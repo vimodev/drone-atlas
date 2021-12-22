@@ -4,56 +4,77 @@ import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import org.apache.commons.dbutils.DbUtils;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.ColumnListHandler;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class App {
 
-    public void run() throws ManagedProcessException {
-        System.out.println("Hello world!");
-        DBConfigurationBuilder config = DBConfigurationBuilder.newBuilder();
-        config.setPort(0);
-        DB db = DB.newEmbeddedDB(config.build());
+    // Embedded database variables
+    public static DB db = null;
+    public static DBConfigurationBuilder cfgb = null;
+    public static String dbName = "drone_atlas";
+
+    // Database connection variables
+    public static Connection conn = null;
+
+    public static java.io.File fileRoot = null;
+
+    /**
+     * Initialize the embedded database systems
+     * @throws ManagedProcessException if it fails
+     */
+    private void initializeDatabaseServer() throws ManagedProcessException {
+        cfgb = DBConfigurationBuilder.newBuilder();
+        cfgb.setPort(0);
+        db = DB.newEmbeddedDB(cfgb.build());
         db.start();
-        String dbName = "drone_atlas";
         db.createDB(dbName);
-        Connection conn = null;
+    }
+
+    /**
+     * Run the application
+     */
+    public void run() {
+        // Attempt to open the file root
+        fileRoot = new java.io.File("/home/vincent/Videos/Edits");
+        // Set up embedded database server first
+        try {
+            initializeDatabaseServer();
+        } catch (ManagedProcessException e) {
+            System.err.println("ERROR: Unable to initialize embedded database server.");
+            e.printStackTrace();
+            System.exit(1);
+        }
+        // Set up MySQL connection driver
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(config.getURL(dbName), "root", "");
-            QueryRunner qr = new QueryRunner();
-
-            // Should be able to create a new table
-            qr.update(conn, "CREATE TABLE hello(world VARCHAR(100))");
-
-            // Should be able to insert into a table
-            qr.update(conn, "INSERT INTO hello VALUES ('Hello, world')");
-
-            // Should be able to select from a table
-            List<String> results = qr.query(conn, "SELECT * FROM hello",
-                    new ColumnListHandler<String>());
-
-            System.out.println(results);
-
-        } catch (SQLException | ClassNotFoundException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            DbUtils.closeQuietly(conn);
+        } catch (ClassNotFoundException e) {
+            System.err.println("ERROR: Unable to locate MySQL driver.");
+            e.printStackTrace();
+            System.exit(1);
         }
+        // Connect to the database
+        try {
+            conn = DriverManager.getConnection(cfgb.getURL(dbName), "root", "");
+        } catch (SQLException throwables) {
+            System.err.println("ERROR: Unable to connect to embedded database.");
+            throwables.printStackTrace();
+            System.exit(1);
+        }
+        // Create the tables
+        try {
+            Migrator.createTables();
+        } catch (SQLException throwables) {
+            System.err.println("ERROR: Unable to create one or more tables.");
+            throwables.printStackTrace();
+            System.exit(1);
+        }
+        FileScanner.scan();
     }
 
     public static void main(String[] args) {
         App main = new App();
-        try {
-            main.run();
-        } catch (ManagedProcessException e) {
-            System.err.println("ERROR: Unable to initialize the embedded database");
-            e.printStackTrace();
-        }
+        main.run();
     }
 
 }
