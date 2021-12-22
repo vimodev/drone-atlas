@@ -18,22 +18,26 @@ public class FileScanner {
     public static void scan() {
         // Fetch all the files
         List<java.io.File> files = fetchFiles(App.fileRoot);
+        System.out.println(files);
         // Go over all files, multithreaded
         files.stream().parallel().forEach((java.io.File file) -> {
             // Add it to the database if its extension is good
-            if (!extensions.contains(FilenameUtils.getExtension(file.getPath()))) {
+            if (!extensions.contains(FilenameUtils.getExtension(file.getPath()).toLowerCase())) {
                 return;
             }
             File f = null;
             try {
                 f = new File(file.toPath());
                 f.insert();
-                System.out.println("Successfully added " + file);
+                System.out.println("Successfully added indexed" + file + ", probing...");
+                Video v = new Video(f);
+                v.insert();
+                System.out.println("Successfully probed " + file + ".");
             } catch (IOException e) {
                 System.err.println("ERROR: Unable to create file from " + file + ".");
                 e.printStackTrace();
             } catch (SQLException throwables) {
-                System.err.println("ERROR: Unable to insert File model " + f + ".");
+                System.err.println("ERROR: Unable to insert model.");
                 throwables.printStackTrace();
             }
         });

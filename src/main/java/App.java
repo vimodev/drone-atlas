@@ -36,7 +36,7 @@ public class App {
      */
     public void run() {
         // Attempt to open the file root
-        fileRoot = new java.io.File("/home/vincent/Videos/Edits");
+        fileRoot = new java.io.File("/home/vincent/Videos/Footage");
         // Set up embedded database server first
         try {
             initializeDatabaseServer();
