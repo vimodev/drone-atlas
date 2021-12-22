@@ -29,10 +29,10 @@ public class FileScanner {
             try {
                 f = new File(file.toPath());
                 f.insert();
-                System.out.println("Successfully added indexed" + file + ", probing...");
+                System.out.println(f.toJSON());
                 Video v = new Video(f);
                 v.insert();
-                System.out.println("Successfully probed " + file + ".");
+                System.out.println(v.toJSON());
             } catch (IOException e) {
                 System.err.println("ERROR: Unable to create file from " + file + ".");
                 e.printStackTrace();

@@ -3,13 +3,17 @@ import com.github.kokorin.jaffree.ffprobe.FFprobe;
 import com.github.kokorin.jaffree.ffprobe.FFprobeResult;
 import com.github.kokorin.jaffree.ffprobe.Stream;
 import org.apache.commons.dbutils.QueryRunner;
+import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * Internal representation of a video
+ */
 public class Video {
 
-    private UUID id;
+    private String id;
     private File file;
     private int width;
     private int height;
@@ -23,7 +27,7 @@ public class Video {
      * @param file video is stored in
      */
     public Video(File file) {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
         this.file = file;
         FFprobeResult ffprobe = FFprobe.atPath()
                 .setShowStreams(true)
@@ -60,7 +64,24 @@ public class Video {
         qr.update(App.conn, query);
     }
 
-    public UUID getId() {
+    public String toString() {
+        return id + ", " + file.getId() + ", " + width + ", "
+                + height + ", " + duration + ", " + fps + ", " + bitrate;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("fileId", file.getId());
+        json.put("width", width);
+        json.put("height", height);
+        json.put("duration", duration);
+        json.put("fps", fps);
+        json.put("bitrate", bitrate);
+        return json;
+    }
+
+    public String getId() {
         return id;
     }
 

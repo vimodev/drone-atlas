@@ -9,6 +9,9 @@ import java.sql.SQLException;
 
 public class App {
 
+    // Webserver variables
+    public static int webPort = 8080;
+
     // Embedded database variables
     public static DB db = null;
     public static DBConfigurationBuilder cfgb = null;
@@ -35,8 +38,16 @@ public class App {
      * Run the application
      */
     public void run() {
+        // Start the Jetty web server
+        try {
+            JettyServer.start(webPort);
+        } catch (Exception e) {
+            System.err.println("ERROR: Unable to start Jetty webserver.");
+            e.printStackTrace();
+            System.exit(1);
+        }
         // Attempt to open the file root
-        fileRoot = new java.io.File("/home/vincent/Videos/Footage");
+        fileRoot = new java.io.File("/home/vincent/Videos/Edits");
         // Set up embedded database server first
         try {
             initializeDatabaseServer();

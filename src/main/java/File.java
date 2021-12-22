@@ -1,11 +1,15 @@
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.json.simple.JSONObject;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -14,21 +18,41 @@ import java.util.UUID;
  */
 public class File {
 
-    private UUID id;
+    private String id;
     private Path path;
     private String hash;
     private long size;
+
+    /**
+     * Find a File in the database with the given id
+     * @param id of the file to search
+     * @return the file
+     */
+    public static File find(String id) {
+        QueryRunner qr = new QueryRunner();
+        ResultSetHandler<File> resultHandler = new BeanHandler<>(File.class);
+        File file = null;
+        try {
+            file = qr.query(App.conn, "SELECT * FROM files WHERE id=?", resultHandler, id);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return file;
+    }
 
     /**
      * Create a new File object based on the file at the path location
      * @param filePath the file's location
      */
     public File(Path filePath) throws IOException {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
         this.path = filePath;
         this.hash = DigestUtils.sha256Hex(new FileInputStream(this.path.toString()));
         this.size = Files.size(this.path);
     }
+
+    public File() {}
 
     /**
      * Save this File object to the database
@@ -40,7 +64,7 @@ public class File {
         String query = new StringBuilder()
                 .append("INSERT INTO files ")
                 .append("VALUES (")
-                .append("'" + id.toString() + "',")
+                .append("'" + id + "',")
                 .append("'" + path.toString() + "',")
                 .append("'" + hash + "',")
                 .append(size)
@@ -50,10 +74,19 @@ public class File {
     }
 
     public String toString() {
-        return id.toString() + ", " + path.toString() + ", " + hash.toString() + ", " + size;
+        return id.toString() + ", " + path.toString() + ", " + hash + ", " + size;
     }
 
-    public UUID getId() {
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("path", path);
+        json.put("hash", hash);
+        json.put("size", size);
+        return json;
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -67,5 +100,21 @@ public class File {
 
     public long getSize() {
         return size;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setPath(String path) {
+        this.path = Paths.get(path);
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 }
