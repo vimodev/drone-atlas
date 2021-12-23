@@ -4,6 +4,7 @@ import ch.vorburger.exec.ManagedProcessException;
 import ch.vorburger.mariadb4j.DB;
 import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -48,8 +49,16 @@ public class App {
             e.printStackTrace();
             System.exit(1);
         }
-        // Attempt to open the file root
-        fileRoot = new java.io.File("/home/vincent/Videos/Footage/20211216 Windmolen");
+        // Ask user for the file root
+        JOptionPane.showMessageDialog(new JDialog(), "Please select the directory where your footage is located.");
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setCurrentDirectory(new java.io.File(System.getProperty("user.home")));
+        int result = fileChooser.showOpenDialog(new JDialog());
+        if (result != JFileChooser.APPROVE_OPTION) {
+            System.exit(1);
+        }
+        fileRoot = fileChooser.getSelectedFile();
         // Set up embedded database server first
         try {
             initializeDatabaseServer();

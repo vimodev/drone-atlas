@@ -69,7 +69,7 @@ public class File {
     public File(Path filePath) throws IOException {
         this.id = UUID.randomUUID().toString();
         this.path = filePath.toString();
-        this.hash = DigestUtils.sha256Hex(new FileInputStream(this.path));
+        this.hash = "none"; //DigestUtils.sha256Hex(new FileInputStream(this.path));
         this.size = Files.size(Paths.get(this.path));
     }
 

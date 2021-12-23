@@ -63,15 +63,14 @@ public class FileScanner {
         try {
             f = new File(file.toPath());
             f.insert();
-            System.out.println("Added file: " + f.toJSON());
             Video v = new Video(f);
             v.insert();
-            System.out.println("Added video: " + v.toJSON());
+            System.out.println("Added video: " + f.getPath());
             List<DataPoint> points = DataPoint.parseVideo(v);
             for (DataPoint point : points) {
                 point.insert();
-                System.out.println("Added point: " + point.toJSON());
             }
+            System.out.println("Successfully parsed: " + f.getPath());
         } catch (IOException e) {
             System.err.println("ERROR: Unable to create file from " + file + ".");
             e.printStackTrace();
