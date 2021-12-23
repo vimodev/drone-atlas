@@ -5,6 +5,10 @@ import ch.vorburger.mariadb4j.DB;
 import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -13,7 +17,7 @@ import java.sql.SQLException;
 public class App {
 
     // Webserver variables
-    public static int webPort = 8080;
+    public static int webPort = 0;
 
     // Embedded database variables
     public static DB db = null;
@@ -91,7 +95,17 @@ public class App {
             throwables.printStackTrace();
             System.exit(1);
         }
+        int port = JettyServer.connector.getLocalPort();
+        try {
+            System.out.println("File scan commencing, please be patient. Opening browser at http://localhost:" + port);
+            Desktop.getDesktop().browse(new URI("http://localhost:" + port));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         FileScanner.scan();
+        System.out.println("File scan done.");
     }
 
     public static void main(String[] args) {

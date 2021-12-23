@@ -15,7 +15,8 @@ import servlets.*;
 import java.net.ContentHandler;
 
 public class JettyServer {
-    private static Server server;
+    public static Server server;
+    public static ServerConnector connector;
 
     private static int maxThreads = 100;
     private static int minThreads = 4;
@@ -30,7 +31,7 @@ public class JettyServer {
         // Create the server with the specified thread configuration
         QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);
         server = new Server(threadPool);
-        ServerConnector connector = new ServerConnector(server);
+        connector = new ServerConnector(server);
         connector.setPort(port);
         server.setConnectors(new Connector[]{connector});
         Handler apiHandler = createAPIHandler();
