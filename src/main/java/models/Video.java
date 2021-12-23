@@ -1,12 +1,12 @@
 package models;
 
 import app.App;
-import com.github.kokorin.jaffree.LogLevel;
-import com.github.kokorin.jaffree.ffprobe.FFprobe;
-import com.github.kokorin.jaffree.ffprobe.FFprobeResult;
-import com.github.kokorin.jaffree.ffprobe.Stream;
+import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
+import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+import net.bramp.ffmpeg.probe.FFmpegStream;
 import net.bramp.ffmpeg.progress.Progress;
 import net.bramp.ffmpeg.progress.ProgressListener;
 import org.apache.commons.dbutils.QueryRunner;
@@ -74,21 +74,28 @@ public class Video {
      * and use the data to construct a Video object
      * @param file video is stored in
      */
-    public Video(File file) {
+    public Video(File file) throws IOException {
         this.id = UUID.randomUUID().toString();
         this.file = file;
         this.fileId = file.getId();
-        FFprobeResult ffprobe = FFprobe.atPath()
-                .setShowStreams(true)
-                .setInput(file.getPath())
-                .setLogLevel(LogLevel.QUIET)
-                .execute();
-        Stream data = ffprobe.getStreams().get(0);
-        this.width = data.getWidth();
-        this.height = data.getHeight();
-        this.duration = data.getDuration();
-        this.fps = data.getAvgFrameRate().doubleValue();
-        this.bitrate = data.getBitRate();
+        FFmpegProbeResult result = new FFprobe(App.ffprobe).probe(file.getPath());
+        FFmpegStream data = result.getStreams().get(0);
+        this.width = data.width;
+        this.height = data.height;
+        this.duration = result.getFormat().duration;
+        this.fps = data.avg_frame_rate.doubleValue();
+        this.bitrate = (int) result.getFormat().bit_rate;
+//        FFprobeResult ffprobe = FFprobe.atPath()
+//                .setShowStreams(true)
+//                .setInput(file.getPath())
+//                .setLogLevel(LogLevel.QUIET)
+//                .execute();
+//        Stream data = ffprobe.getStreams().get(0);
+//        this.width = data.getWidth();
+//        this.height = data.getHeight();
+//        this.duration = data.getDuration();
+//        this.fps = data.getAvgFrameRate().doubleValue();
+//        this.bitrate = data.getBitRate();
     }
 
     public Video() {}
@@ -141,7 +148,7 @@ public class Video {
                 .setInput(this.file.getPath())
                 .addOutput(output.getPath())
                 .done();
-        FFmpegExecutor exec = new FFmpegExecutor();
+        FFmpegExecutor exec = new FFmpegExecutor(new FFmpeg(App.ffmpeg));
         exec.createJob(builder).run();
         return output;
     }

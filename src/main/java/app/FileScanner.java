@@ -65,7 +65,6 @@ public class FileScanner {
             f.insert();
             Video v = new Video(f);
             v.insert();
-            System.out.println("Added video: " + f.getPath());
             List<DataPoint> points = DataPoint.parseVideo(v);
             for (DataPoint point : points) {
                 point.insert();

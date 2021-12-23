@@ -16,6 +16,9 @@ import java.sql.SQLException;
 
 public class App {
 
+    public static String ffmpeg = "";
+    public static String ffprobe = "";
+
     // Webserver variables
     public static int webPort = 0;
 
@@ -45,6 +48,12 @@ public class App {
      * Run the application
      */
     public void run() {
+        try {
+            System.out.println("Extracting native ffmpeg executables.");
+            Utility.setFfPaths();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // Start the Jetty web server
         try {
             JettyServer.start(webPort);
