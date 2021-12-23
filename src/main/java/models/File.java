@@ -89,7 +89,7 @@ public class File {
                 .append("INSERT INTO files ")
                 .append("VALUES (")
                 .append("'" + id + "',")
-                .append("'" + path + "',")
+                .append("'" + path.replace("\\", "\\\\") + "',")
                 .append("'" + hash + "',")
                 .append(size)
                 .append(")")
