@@ -66,6 +66,7 @@ public class JettyServer {
         // File endpoints
         servletHandler.addServlet(FileServlet.class, "/file");
         servletHandler.addServlet(FileAllServlet.class, "/file/all");
+        servletHandler.addServlet(FileOpenerServlet.class, "/file/open");
         // Video endpoints
         servletHandler.addServlet(VideoServlet.class, "/video");
         servletHandler.addServlet(VideoAllServlet.class, "/video/all");

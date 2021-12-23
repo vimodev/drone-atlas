@@ -55,7 +55,9 @@ function populate(info) {
     }
   }
   const link = document.getElementById("videoLink")
-  link.href = "video.html?video=" + info.video_id + "&time=" + info.start_seconds
+  link.onclick = () => {
+    fetch("/api/file/open?id=" + info.video.file.id)
+  }
   const img = document.getElementById("thumbnail")
   img.src = "/api/datapoints/" + info.id + "/thumbnail"
 }
