@@ -1,3 +1,8 @@
+package app;
+
+import app.App;
+import models.File;
+import models.Video;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;

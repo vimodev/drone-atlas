@@ -1,14 +1,12 @@
+package app;
+
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import servlets.FileServlet;
+import servlets.VideoServlet;
 
 public class JettyServer {
     private static Server server;
@@ -32,7 +30,8 @@ public class JettyServer {
         // Specify handlers
         ServletHandler servletHandler = new ServletHandler();
         server.setHandler(servletHandler);
-        servletHandler.addServletWithMapping(FileServlet.class, "/status");
+        servletHandler.addServletWithMapping(FileServlet.class, "/file");
+        servletHandler.addServletWithMapping(VideoServlet.class, "/video");
         // Start the server
         server.start();
     }

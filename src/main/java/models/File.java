@@ -1,3 +1,6 @@
+package models;
+
+import app.App;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -5,7 +8,6 @@ import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.json.simple.JSONObject;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +21,7 @@ import java.util.UUID;
 public class File {
 
     private String id;
-    private Path path;
+    private String path;
     private String hash;
     private long size;
 
@@ -47,11 +49,14 @@ public class File {
      */
     public File(Path filePath) throws IOException {
         this.id = UUID.randomUUID().toString();
-        this.path = filePath;
-        this.hash = DigestUtils.sha256Hex(new FileInputStream(this.path.toString()));
-        this.size = Files.size(this.path);
+        this.path = filePath.toString();
+        this.hash = DigestUtils.sha256Hex(new FileInputStream(this.path));
+        this.size = Files.size(Paths.get(this.path));
     }
 
+    /**
+     * Empty constructor for Query Runner Bean Handler
+     */
     public File() {}
 
     /**
@@ -65,7 +70,7 @@ public class File {
                 .append("INSERT INTO files ")
                 .append("VALUES (")
                 .append("'" + id + "',")
-                .append("'" + path.toString() + "',")
+                .append("'" + path + "',")
                 .append("'" + hash + "',")
                 .append(size)
                 .append(")")
@@ -74,7 +79,7 @@ public class File {
     }
 
     public String toString() {
-        return id.toString() + ", " + path.toString() + ", " + hash + ", " + size;
+        return id + ", " + path + ", " + hash + ", " + size;
     }
 
     public JSONObject toJSON() {
@@ -90,7 +95,7 @@ public class File {
         return id;
     }
 
-    public Path getPath() {
+    public String getPath() {
         return path;
     }
 
@@ -107,7 +112,7 @@ public class File {
     }
 
     public void setPath(String path) {
-        this.path = Paths.get(path);
+        this.path = path;
     }
 
     public void setHash(String hash) {

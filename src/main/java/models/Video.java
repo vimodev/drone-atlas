@@ -1,8 +1,13 @@
+package models;
+
+import app.App;
 import com.github.kokorin.jaffree.LogLevel;
 import com.github.kokorin.jaffree.ffprobe.FFprobe;
 import com.github.kokorin.jaffree.ffprobe.FFprobeResult;
 import com.github.kokorin.jaffree.ffprobe.Stream;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
@@ -14,12 +19,31 @@ import java.util.UUID;
 public class Video {
 
     private String id;
+    private String fileId;
     private File file;
     private int width;
     private int height;
     private double duration;
     private double fps;
     private int bitrate;
+
+    /**
+     * Find a video in the database by its id
+     * @param id of the video
+     * @return the Video or null
+     */
+    public static Video find(String id) {
+        QueryRunner qr = new QueryRunner();
+        ResultSetHandler<Video> resultHandler = new BeanHandler<>(Video.class);
+        Video video = null;
+        try {
+            video = qr.query(App.conn, "SELECT * FROM videos WHERE id=?", resultHandler, id);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return video;
+    }
 
     /**
      * Probe the given file using ffprobe
@@ -29,6 +53,7 @@ public class Video {
     public Video(File file) {
         this.id = UUID.randomUUID().toString();
         this.file = file;
+        this.fileId = file.getId();
         FFprobeResult ffprobe = FFprobe.atPath()
                 .setShowStreams(true)
                 .setInput(file.getPath())
@@ -41,6 +66,8 @@ public class Video {
         this.fps = data.getAvgFrameRate().doubleValue();
         this.bitrate = data.getBitRate();
     }
+
+    public Video() {}
 
     /**
      * Save this Video object to the database
@@ -65,14 +92,14 @@ public class Video {
     }
 
     public String toString() {
-        return id + ", " + file.getId() + ", " + width + ", "
+        return id + ", " + (fileId != null ? fileId : file.getId()) + ", " + width + ", "
                 + height + ", " + duration + ", " + fps + ", " + bitrate;
     }
 
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("id", id);
-        json.put("fileId", file.getId());
+        json.put("fileId", file == null ? fileId : file.getId());
         json.put("width", width);
         json.put("height", height);
         json.put("duration", duration);
@@ -103,5 +130,45 @@ public class Video {
 
     public int getBitrate() {
         return bitrate;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public double getDuration() {
+        return duration;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
+
+    public void setFps(double fps) {
+        this.fps = fps;
+    }
+
+    public void setBitrate(int bitrate) {
+        this.bitrate = bitrate;
     }
 }
