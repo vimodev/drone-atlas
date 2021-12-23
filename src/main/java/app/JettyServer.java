@@ -1,11 +1,18 @@
 package app;
 
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import servlets.*;
+
+import java.net.ContentHandler;
 
 public class JettyServer {
     private static Server server;
@@ -26,20 +33,46 @@ public class JettyServer {
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(port);
         server.setConnectors(new Connector[]{connector});
-        // Specify handlers
-        ServletHandler servletHandler = new ServletHandler();
-        server.setHandler(servletHandler);
-        // File endpoints
-        servletHandler.addServletWithMapping(FileServlet.class, "/file");
-        servletHandler.addServletWithMapping(FileAllServlet.class, "/file/all");
-        // Video endpoints
-        servletHandler.addServletWithMapping(VideoServlet.class, "/video");
-        servletHandler.addServletWithMapping(VideoAllServlet.class, "/video/all");
-        // Data point endpoints
-        servletHandler.addServletWithMapping(DataPointServlet.class, "/point");
-        servletHandler.addServletWithMapping(DataPointByVideoServlet.class, "/point/from");
+        Handler apiHandler = createAPIHandler();
+        Handler frontendHandler = createFrontendHandler();
+        // Attach handlers to server
+        HandlerCollection collection = new HandlerCollection();
+        collection.setHandlers(new Handler[]{ apiHandler, frontendHandler});
+        server.setHandler(collection);
         // Start the server
         server.start();
+    }
+
+    /**
+     * Create the handler for the frontend static content
+     * @return handler to handle frontend requests
+     */
+    private static Handler createFrontendHandler() {
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setResourceBase(JettyServer.class.getClassLoader().getResource("frontend").toString());
+        ContextHandler contextHandler = new ContextHandler("/");
+        contextHandler.setHandler(resourceHandler);
+        return contextHandler;
+    }
+
+    /**
+     * Create the handler for the API requests
+     * @return the servlet handler
+     */
+    private static Handler createAPIHandler() {
+        // Specify servlet handlers
+        ServletContextHandler servletHandler = new ServletContextHandler();
+        servletHandler.setContextPath("/api");
+        // File endpoints
+        servletHandler.addServlet(FileServlet.class, "/file");
+        servletHandler.addServlet(FileAllServlet.class, "/file/all");
+        // Video endpoints
+        servletHandler.addServlet(VideoServlet.class, "/video");
+        servletHandler.addServlet(VideoAllServlet.class, "/video/all");
+        // Data point endpoints
+        servletHandler.addServlet(DataPointServlet.class, "/point");
+        servletHandler.addServlet(DataPointByVideoServlet.class, "/point/from");
+        return servletHandler;
     }
 
     /**

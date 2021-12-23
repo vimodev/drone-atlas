@@ -181,13 +181,25 @@ public class DataPoint {
         qr.update(App.conn, query);
     }
 
+    /**
+     * Load the video if it is not loaded yet
+     * @return Video object
+     */
+    public Video preloadVideo() {
+        if (this.video != null) return this.video;
+        if (this.videoId == null) return null;
+        Video video = Video.find(this.videoId);
+        this.video = video;
+        return video;
+    }
+
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("id", id);
         json.put("videoId", videoId);
         json.put("sequenceNumber", sequenceNumber);
         json.put("startSeconds", startSeconds);
-        json.put("localLength", focalLength);
+        json.put("focalLength", focalLength);
         json.put("shutterSpeed", shutterSpeed);
         json.put("iso", iso);
         json.put("ev", ev);

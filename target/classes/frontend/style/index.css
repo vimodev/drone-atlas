@@ -1,0 +1,67 @@
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 80%; /* Full width (cover the whole page) */
+  height: 90%; /* Full height (cover the whole page) */
+  top: 5%;
+  left: 10%;
+  /* margin-top: -45%;
+  margin-left: -45%; */
+  background-color: rgba(255, 255, 255, 0.85); /* Black background with opacity */
+  z-index: 999999; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+body {
+  margin: 0;
+  background-color: rgb(54, 54, 54);
+}
+
+#toolbutt {
+  position: fixed; /* Sit on top of the page content */
+  top: 25px;
+  right: 25px;
+  font-size: larger;
+  z-index: 999999; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+#sattoggle {
+  position: fixed; /* Sit on top of the page content */
+  top: 25px;
+  left: 60px;
+  font-size: larger;
+  z-index: 999999; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+#colorize {
+  position: fixed; /* Sit on top of the page content */
+  top: 25px;
+  left: 220px;
+  font-size: larger;
+  z-index: 999999; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+#filterMenu {
+  position: fixed;
+  top: 75px;
+  left: 10px;
+  z-index: 999999;
+  border: 2px solid black;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.75);
+  padding: 5px;
+}
+
+.filterInput {
+  margin: 5px;
+  width: 90%;
+}
