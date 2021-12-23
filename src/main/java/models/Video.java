@@ -5,12 +5,15 @@ import com.github.kokorin.jaffree.LogLevel;
 import com.github.kokorin.jaffree.ffprobe.FFprobe;
 import com.github.kokorin.jaffree.ffprobe.FFprobeResult;
 import com.github.kokorin.jaffree.ffprobe.Stream;
+import net.bramp.ffmpeg.FFmpegExecutor;
+import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
@@ -108,6 +111,36 @@ public class Video {
                 .append(")")
                 .toString();
         qr.update(App.conn, query);
+    }
+
+    /**
+     * Load the file if it is not loaded yet
+     * @return File object
+     */
+    public File preloadFile() {
+        if (this.file != null) return this.file;
+        if (this.fileId == null) return null;
+        File file = File.find(this.fileId);
+        this.file = file;
+        return file;
+    }
+
+    /**
+     * Dump this video's subtitles to a temporary
+     * file that is deleted when Java terminates
+     * @return subtitle file
+     */
+    public java.io.File dumpSubtitles() throws IOException {
+        if (this.file == null) preloadFile();
+        if (this.file == null) return null;
+        java.io.File output = java.io.File.createTempFile("drone-atlas-", ".srt");
+        FFmpegBuilder builder = new FFmpegBuilder()
+                .setInput(this.file.getPath())
+                .addOutput(output.getPath())
+                .done();
+        FFmpegExecutor exec = new FFmpegExecutor();
+        exec.createJob(builder).run();
+        return output;
     }
 
     public String toString() {

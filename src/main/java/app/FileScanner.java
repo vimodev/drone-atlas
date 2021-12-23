@@ -1,6 +1,7 @@
 package app;
 
 import app.App;
+import models.DataPoint;
 import models.File;
 import models.Video;
 import org.apache.commons.io.FilenameUtils;
@@ -26,25 +27,7 @@ public class FileScanner {
         System.out.println(files);
         // Go over all files, multithreaded
         files.stream().parallel().forEach((java.io.File file) -> {
-            // Add it to the database if its extension is good
-            if (!extensions.contains(FilenameUtils.getExtension(file.getPath()).toLowerCase())) {
-                return;
-            }
-            File f = null;
-            try {
-                f = new File(file.toPath());
-                f.insert();
-                System.out.println(f.toJSON());
-                Video v = new Video(f);
-                v.insert();
-                System.out.println(v.toJSON());
-            } catch (IOException e) {
-                System.err.println("ERROR: Unable to create file from " + file + ".");
-                e.printStackTrace();
-            } catch (SQLException throwables) {
-                System.err.println("ERROR: Unable to insert model.");
-                throwables.printStackTrace();
-            }
+            handleFile(file);
         });
     }
 
@@ -66,6 +49,36 @@ public class FileScanner {
             }
         }
         return files;
+    }
+
+    /**
+     * Handle a file scanned from the root media directory
+     * @param file the file to handle
+     */
+    private static void handleFile(java.io.File file) {
+        // We only care about some extensions
+        if (!extensions.contains(FilenameUtils.getExtension(file.getPath()).toLowerCase())) {
+            return;
+        }
+        File f = null;
+        try {
+            f = new File(file.toPath());
+            f.insert();
+            System.out.println(f.toJSON());
+            Video v = new Video(f);
+            v.insert();
+            System.out.println(v.toJSON());
+            List<DataPoint> points = DataPoint.fromVideo(v);
+            for (DataPoint point : points) {
+                point.insert();
+            }
+        } catch (IOException e) {
+            System.err.println("ERROR: Unable to create file from " + file + ".");
+            e.printStackTrace();
+        } catch (SQLException throwables) {
+            System.err.println("ERROR: Unable to insert model.");
+            throwables.printStackTrace();
+        }
     }
 
 }
