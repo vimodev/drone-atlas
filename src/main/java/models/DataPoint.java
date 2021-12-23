@@ -2,6 +2,9 @@ package models;
 
 import app.App;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -34,6 +37,24 @@ public class DataPoint {
     private double horizontalSpeed;
     private double verticalSpeed;
 
+    /**
+     * Find a data point in the data base
+     * @param id of the data point
+     * @return the data point if it exists, or null
+     */
+    public static DataPoint find(String id) {
+        QueryRunner qr = new QueryRunner();
+        ResultSetHandler<DataPoint> resultHandler = new BeanHandler<>(DataPoint.class);
+        DataPoint point = null;
+        try {
+            point = qr.query(App.conn, "SELECT * FROM data_points WHERE id=?", resultHandler, id);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return point;
+    }
+
     public DataPoint(Video video, int sequenceNumber, double startSeconds, double focalLength, double shutterSpeed,
                      int iso, double ev, double digitalZoom, double longitude, double latitude, int gpsSatCount,
                      double distance, double height, double horizontalSpeed, double verticalSpeed) {
@@ -56,12 +77,14 @@ public class DataPoint {
         this.verticalSpeed = verticalSpeed;
     }
 
+    public DataPoint() {}
+
     /**
      * Get a list of DataPoints from a Video
      * @param video object
      * @return list of DataPoints
      */
-    public static List<DataPoint> fromVideo(Video video) throws IOException {
+    public static List<DataPoint> parseVideo(Video video) throws IOException {
         // Fetch the subtitle file from the video
         java.io.File subtitles = video.dumpSubtitles();
         // Read relevant lines
@@ -136,6 +159,27 @@ public class DataPoint {
                 .append(")")
                 .toString();
         qr.update(App.conn, query);
+    }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("videoId", videoId);
+        json.put("sequenceNumber", sequenceNumber);
+        json.put("startSeconds", startSeconds);
+        json.put("localLength", focalLength);
+        json.put("shutterSpeed", shutterSpeed);
+        json.put("iso", iso);
+        json.put("ev", ev);
+        json.put("digitalZoom", digitalZoom);
+        json.put("longitude", longitude);
+        json.put("latitude", latitude);
+        json.put("gpsSatCount", gpsSatCount);
+        json.put("distance", distance);
+        json.put("height", height);
+        json.put("horizontalSpeed", horizontalSpeed);
+        json.put("verticalSpeed", verticalSpeed);
+        return json;
     }
 
     public String getId() {

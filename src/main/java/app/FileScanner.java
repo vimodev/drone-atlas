@@ -1,6 +1,5 @@
 package app;
 
-import app.App;
 import models.DataPoint;
 import models.File;
 import models.Video;
@@ -64,13 +63,14 @@ public class FileScanner {
         try {
             f = new File(file.toPath());
             f.insert();
-            System.out.println(f.toJSON());
+            System.out.println("Added file: " + f.toJSON());
             Video v = new Video(f);
             v.insert();
-            System.out.println(v.toJSON());
-            List<DataPoint> points = DataPoint.fromVideo(v);
+            System.out.println("Added video: " + v.toJSON());
+            List<DataPoint> points = DataPoint.parseVideo(v);
             for (DataPoint point : points) {
                 point.insert();
+                System.out.println("Added point: " + point.toJSON());
             }
         } catch (IOException e) {
             System.err.println("ERROR: Unable to create file from " + file + ".");
