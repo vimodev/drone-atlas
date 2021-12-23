@@ -8,9 +8,11 @@ import com.github.kokorin.jaffree.ffprobe.Stream;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -43,6 +45,23 @@ public class Video {
             return null;
         }
         return video;
+    }
+
+    /**
+     * Retrieve a list of all videos in the database
+     * @return List of Video objects
+     */
+    public static List<Video> findAll() {
+        QueryRunner qr = new QueryRunner();
+        ResultSetHandler<List<Video>> resultHandler = new BeanListHandler<>(Video.class);
+        List<Video> videos = null;
+        try {
+            videos = qr.query(App.conn, "SELECT * FROM videos", resultHandler);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return videos;
     }
 
     /**

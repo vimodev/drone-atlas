@@ -5,7 +5,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import servlets.FileAllServlet;
 import servlets.FileServlet;
+import servlets.VideoAllServlet;
 import servlets.VideoServlet;
 
 public class JettyServer {
@@ -31,7 +33,9 @@ public class JettyServer {
         ServletHandler servletHandler = new ServletHandler();
         server.setHandler(servletHandler);
         servletHandler.addServletWithMapping(FileServlet.class, "/file");
+        servletHandler.addServletWithMapping(FileAllServlet.class, "/file/all");
         servletHandler.addServletWithMapping(VideoServlet.class, "/video");
+        servletHandler.addServletWithMapping(VideoAllServlet.class, "/video/all");
         // Start the server
         server.start();
     }

@@ -5,6 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.json.simple.JSONObject;
 
 import java.io.FileInputStream;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -41,6 +43,23 @@ public class File {
             return null;
         }
         return file;
+    }
+
+    /**
+     * Retrieve a list of all Files in the database
+     * @return the list of File objects
+     */
+    public static List<File> findAll() {
+        QueryRunner qr = new QueryRunner();
+        ResultSetHandler<List<File>> resultHandler = new BeanListHandler<>(File.class);
+        List<File> files = null;
+        try {
+            files = qr.query(App.conn, "SELECT * FROM files", resultHandler);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return files;
     }
 
     /**

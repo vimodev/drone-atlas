@@ -5,25 +5,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import models.Video;
+import java.util.List;
 
-public class VideoServlet extends HttpServlet {
+import models.File;
+import org.json.simple.JSONArray;
+
+public class FileAllServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Get the video id parameter
-        String videoId = request.getParameter("id");
-        if (videoId == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        // Retrieve all files
+        List<File> files = File.findAll();
+        if (files == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
-        // Try to find the video
-        Video video = Video.find(videoId);
-        if (video == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
+        // Convert to JSON
+        JSONArray json = new JSONArray();
+        for (File file : files) {
+            json.add(file.toJSON());
         }
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(video.toJSON());
+        response.getWriter().println(json);
     }
 }
