@@ -136,6 +136,7 @@ public class Video {
         if (this.file == null) preloadFile();
         if (this.file == null) return null;
         java.io.File output = java.io.File.createTempFile("drone-atlas-", ".srt");
+        output.deleteOnExit();
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(this.file.getPath())
                 .addOutput(output.getPath())
