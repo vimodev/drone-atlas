@@ -37,6 +37,7 @@ public class JettyServer {
         servletHandler.addServletWithMapping(VideoAllServlet.class, "/video/all");
         // Data point endpoints
         servletHandler.addServletWithMapping(DataPointServlet.class, "/point");
+        servletHandler.addServletWithMapping(DataPointByVideoServlet.class, "/point/from");
         // Start the server
         server.start();
     }

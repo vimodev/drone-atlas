@@ -4,6 +4,7 @@ import app.App;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
@@ -53,6 +54,25 @@ public class DataPoint {
             return null;
         }
         return point;
+    }
+
+    /**
+     * Find all the data points belonging to a video
+     * @param videoId id of the video
+     * @return list of data points
+     */
+    public static List<DataPoint> findByVideo(String videoId) {
+        QueryRunner qr = new QueryRunner();
+        ResultSetHandler<List<DataPoint>> resultHandler = new BeanListHandler<>(DataPoint.class);
+        List<DataPoint> points = null;
+        try {
+            points = qr.query(App.conn, "SELECT * FROM data_points WHERE videoId=? ORDER BY sequenceNumber",
+                    resultHandler, videoId);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return points;
     }
 
     public DataPoint(Video video, int sequenceNumber, double startSeconds, double focalLength, double shutterSpeed,
