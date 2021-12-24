@@ -23,4 +23,5 @@
 
 body {
   background-image: url('/assets/thumbnail.png');
+  background-size: cover;
 }
