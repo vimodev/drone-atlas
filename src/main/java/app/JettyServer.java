@@ -71,6 +71,7 @@ public class JettyServer {
         // Video endpoints
         servletHandler.addServlet(VideoServlet.class, "/video");
         servletHandler.addServlet(VideoAllServlet.class, "/video/all");
+        servletHandler.addServlet(VideoThumbnailServlet.class, "/video/thumbnail");
         // Data point endpoints
         servletHandler.addServlet(DataPointServlet.class, "/point");
         servletHandler.addServlet(DataPointByVideoServlet.class, "/point/from");

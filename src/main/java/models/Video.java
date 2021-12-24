@@ -152,6 +152,29 @@ public class Video {
         return output;
     }
 
+    /**
+     * Take a screen shot at the given time in the video
+     * @param time in the video
+     * @return file of screenshot or null
+     */
+    public java.io.File screenshot(int time) throws IOException {
+        if (this.file == null) preloadFile();
+        if (this.file == null) return null;
+        if (time < 0 || time > this.duration) return null;
+        java.io.File output = java.io.File.createTempFile("drone-atlas-", ".jpg");
+        output.deleteOnExit();
+        FFmpegBuilder builder = new FFmpegBuilder()
+                .setInput(this.file.getPath())
+                .addExtraArgs("-ss", Integer.toString(time))
+                .addOutput(output.getPath())
+                .addExtraArgs("-q:v", "5")
+                .addExtraArgs("-vframes", "1")
+                .done();
+        FFmpegExecutor exec = new FFmpegExecutor(new FFmpeg(App.ffmpeg));
+        exec.createJob(builder).run();
+        return output;
+    }
+
     public String toString() {
         return id + ", " + (fileId != null ? fileId : file.getId()) + ", " + width + ", "
                 + height + ", " + duration + ", " + fps + ", " + bitrate;

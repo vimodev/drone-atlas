@@ -59,7 +59,7 @@ function populate(info) {
     fetch("/api/file/open?id=" + info.video.file.id)
   }
   const img = document.getElementById("thumbnail")
-  img.src = "/api/datapoints/" + info.id + "/thumbnail"
+  img.src = "/api/video/thumbnail?id=" + info.video.id + "&t=" + info.startSeconds
 }
 
 // Run functions in order
