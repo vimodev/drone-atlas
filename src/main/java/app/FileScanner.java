@@ -64,6 +64,7 @@ public class FileScanner {
             f = new File(file.toPath());
             f.insert();
             Video v = new Video(f);
+            if (!v.isDjiVideo) return;
             v.insert();
             List<DataPoint> points = DataPoint.parseVideo(v);
             for (DataPoint point : points) {

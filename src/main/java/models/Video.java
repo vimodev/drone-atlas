@@ -34,6 +34,8 @@ public class Video {
     private double fps;
     private int bitrate;
 
+    public boolean isDjiVideo;
+
     /**
      * Find a video in the database by its id
      * @param id of the video
@@ -85,17 +87,14 @@ public class Video {
         this.duration = result.getFormat().duration;
         this.fps = data.avg_frame_rate.doubleValue();
         this.bitrate = (int) result.getFormat().bit_rate;
-//        FFprobeResult ffprobe = FFprobe.atPath()
-//                .setShowStreams(true)
-//                .setInput(file.getPath())
-//                .setLogLevel(LogLevel.QUIET)
-//                .execute();
-//        Stream data = ffprobe.getStreams().get(0);
-//        this.width = data.getWidth();
-//        this.height = data.getHeight();
-//        this.duration = data.getDuration();
-//        this.fps = data.getAvgFrameRate().doubleValue();
-//        this.bitrate = data.getBitRate();
+        // Mark this video as DJI video or not by searching for the subtitle stream
+        this.isDjiVideo = false;
+        for (FFmpegStream stream : result.getStreams()) {
+            if (stream.tags.get("handler_name").toLowerCase().contains("dji.subtitle")) {
+                this.isDjiVideo = true;
+                break;
+            }
+        }
     }
 
     public Video() {}
