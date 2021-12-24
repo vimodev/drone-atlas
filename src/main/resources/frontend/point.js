@@ -37,7 +37,7 @@ function appendKeyValue(key, value) {
 
 // Populate the page with the information in the point
 function populate(info) {
-  appendKeyValue('<b>Datapoint Info:</b>', '')
+  appendKeyValue('<b>Datapoint Info:</b>', '<a id="videoLink">Play video</a>')
   for (const key in info) {
     if (info.hasOwnProperty(key) && exclude_attributes.indexOf(key) == -1) {
       appendKeyValue(key, info[key])
@@ -58,8 +58,7 @@ function populate(info) {
   link.onclick = () => {
     fetch("/api/file/open?id=" + info.video.file.id)
   }
-  const img = document.getElementById("thumbnail")
-  img.src = "/api/video/thumbnail?id=" + info.video.id + "&t=" + info.startSeconds
+  document.body.style.backgroundImage = "url('" + "/api/video/thumbnail?id=" + info.video.id + "&t=" + info.startSeconds + "')"
 }
 
 // Run functions in order
