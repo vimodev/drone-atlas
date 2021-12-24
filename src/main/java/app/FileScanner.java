@@ -22,7 +22,7 @@ public class FileScanner {
      */
     public static void scan() {
         // Fetch all the files
-        List<java.io.File> files = fetchFiles(App.fileRoot);
+        List<java.io.File> files = fetchFiles(new java.io.File(Settings.root));
         System.out.println(files);
         // Go over all files, multithreaded
         files.stream().parallel().forEach((java.io.File file) -> {

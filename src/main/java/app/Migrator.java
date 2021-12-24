@@ -11,6 +11,7 @@ public class Migrator {
         createFilesTable();
         createVideosTable();
         createDataPointsTable();
+        createSettingsTable();
     }
 
     public static void createFilesTable() throws SQLException {
@@ -64,6 +65,17 @@ public class Migrator {
                 .append("horizontalSpeed double NOT NULL,")
                 .append("verticalSpeed double NOT NULL,")
                 .append("FOREIGN KEY (videoId) REFERENCES videos(id) ON DELETE CASCADE")
+                .append(")")
+                .toString();
+        qr.update(App.conn, query);
+    }
+
+    public static void createSettingsTable() throws SQLException {
+        QueryRunner qr = new QueryRunner();
+        String query = new StringBuilder()
+                .append("CREATE TABLE settings (")
+                .append("name VARCHAR(255) PRIMARY KEY,")
+                .append("value TEXT")
                 .append(")")
                 .toString();
         qr.update(App.conn, query);

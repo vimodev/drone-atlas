@@ -78,6 +78,7 @@ public class App {
             // If it fails we assume its because its a new folder, so no database yet
             System.out.println("Did not find database, creating.");
             newDatabase = true;
+            JOptionPane.showMessageDialog(new JDialog(), "No previous data detected. You may be required to configure some settings.");
             // And we create it
             try {
                 db.createDB(dbName);
@@ -117,21 +118,7 @@ public class App {
         }
     }
 
-    /**
-     * Prompt the user to specify the file root
-     */
-    private void promptFileRoot() {
-        // Ask user for the file root
-        JOptionPane.showMessageDialog(new JDialog(), "Please select the directory where your footage is located.");
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setCurrentDirectory(new java.io.File(System.getProperty("user.home")));
-        int result = fileChooser.showOpenDialog(new JDialog());
-        if (result != JFileChooser.APPROVE_OPTION) {
-            System.exit(1);
-        }
-        fileRoot = fileChooser.getSelectedFile();
-    }
+
 
     /**
      * Set the working dir variable based on currently running jar
@@ -183,7 +170,7 @@ public class App {
         initializeDatabaseServer();
         connectDatabase();
         openBrowser();
-        promptFileRoot();
+        Settings.load();
         if (newDatabase) FileScanner.scan();
         System.out.println("File scan done.");
     }
