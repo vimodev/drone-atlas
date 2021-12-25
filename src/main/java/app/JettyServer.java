@@ -75,6 +75,9 @@ public class JettyServer {
         // Data point endpoints
         servletHandler.addServlet(DataPointServlet.class, "/point");
         servletHandler.addServlet(DataPointByVideoServlet.class, "/point/from");
+        // Image endpoints
+        servletHandler.addServlet(ImageServlet.class, "/image");
+        servletHandler.addServlet(ImageAllServlet.class, "/image/all");
         return servletHandler;
     }
 

@@ -12,10 +12,14 @@ import com.drew.metadata.exif.ExifSubIFDDescriptor;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 public class Image {
@@ -37,6 +41,41 @@ public class Image {
     private double ev;
     private double shutterSpeed;
     private String creationTime;
+
+    /**
+     * Find an image in the database by its id
+     * @param id of the image
+     * @return the Image or null
+     */
+    public static Image find(String id) {
+        QueryRunner qr = new QueryRunner();
+        ResultSetHandler<Image> resultHandler = new BeanHandler<>(Image.class);
+        Image image = null;
+        try {
+            image = qr.query(App.conn, "SELECT * FROM images WHERE id=?", resultHandler, id);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return image;
+    }
+
+    /**
+     * Retrieve a list of all images in the database
+     * @return List of Image objects
+     */
+    public static List<Image> findAll() {
+        QueryRunner qr = new QueryRunner();
+        ResultSetHandler<List<Image>> resultHandler = new BeanListHandler<>(Image.class);
+        List<Image> image = null;
+        try {
+            image = qr.query(App.conn, "SELECT * FROM images", resultHandler);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        return image;
+    }
 
     /**
      * Given a file object, knowing it is an image, create a Image object.
@@ -69,6 +108,11 @@ public class Image {
 
     public Image() {}
 
+    public java.io.File thumbnail() {
+        if (this.file == null) preloadFile();
+        if (this.file == null) return null;
+    }
+
     public void insert() throws SQLException {
         QueryRunner qr = new QueryRunner();
         qr.update(App.conn, "INSERT INTO images VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -77,12 +121,43 @@ public class Image {
                 ev, shutterSpeed, creationTime);
     }
 
-    public String toString() {
-        return null;
+    /**
+     * Load the file if it is not loaded yet
+     * @return File object
+     */
+    public File preloadFile() {
+        if (this.file != null) return this.file;
+        if (this.fileId == null) return null;
+        File file = File.find(this.fileId);
+        this.file = file;
+        return file;
     }
 
-    public JSONObject toJson() {
-        return null;
+    public String toString() {
+        return id + ", " + fileId + ", " + width + ", " + height + ", " + longitude + ", " + latitude + ", " + altitude + ", " +
+                fStop + ", " + focalLength + ", " + exposureTime + ", " + iso + ", " + aperture + ", " + digitalZoom + ", " +
+                ev + ", " + shutterSpeed + ", " + creationTime;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("fileId", fileId);
+        json.put("width", width);
+        json.put("height", height);
+        json.put("longitude", longitude);
+        json.put("latitude", latitude);
+        json.put("altitude", altitude);
+        json.put("fStop", fStop);
+        json.put("focalLength", focalLength);
+        json.put("exposureTime", exposureTime);
+        json.put("iso", iso);
+        json.put("aperture", aperture);
+        json.put("digitalZoom", digitalZoom);
+        json.put("ev", ev);
+        json.put("shutterSpeed", shutterSpeed);
+        json.put("creationTime", creationTime);
+        return json;
     }
 
     public String getId() {

@@ -9,7 +9,7 @@ function getImageId() {
 // Fetch the point from the backend
 async function fetchImageInformation(pointId) {
   return await new Promise((resolve) => {
-    fetch("/api/images/" + pointId)
+    fetch("/api/image?id=" + pointId)
       .then(function (response) {
         return response.json()
       })

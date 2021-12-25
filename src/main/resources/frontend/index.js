@@ -231,8 +231,6 @@ function handleImages(images) {
     map.setCenter(marker.lonlat, 15)
     prev_image = image
   }
-  // If there were no videos or images, zoom map out
-  if (fetched_videos.length == 0 && images.length == 0) map.zoomToMaxExtent();
 }
 
 // Fetch video datapoints
@@ -264,7 +262,7 @@ async function fetchVideos() {
 // Fetch images
 async function fetchImages() {
   return await new Promise((resolve) => {
-    fetch("/api/images")
+    fetch("/api/image/all")
       .then(function (response) {
         return response.json()
       })
@@ -322,4 +320,4 @@ fetchVideos().then(function (videos) {
 })
 
 // Fetch all images
-//fetchImages().then(handleImages)
+fetchImages().then(handleImages)
