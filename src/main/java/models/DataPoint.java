@@ -139,22 +139,27 @@ public class DataPoint {
             // 00:00:04,000 --> 00:00:05,000
             // F/2.8, SS 1000.82, ISO 100, EV 0, DZOOM 1.000, GPS (7.7298, 5.2099, 23), D 9.91m, H 1.60m, H.S 9.45m/s, V.S 1.90m/s
             //
-            double focalLength = Double.parseDouble(meta[0].split("/")[1].trim());
-            double shutterspeed = Double.parseDouble(meta[1].trim().split(" ")[1]);
-            int iso = Integer.parseInt(meta[2].trim().split(" ")[1]);
-            double ev = Double.parseDouble(meta[3].trim().split(" ")[1]);
-            double dzoom = Double.parseDouble(meta[4].trim().split(" ")[1]);
-            double longitude = Double.parseDouble(meta[5].split("\\(")[1]);
-            double latitude = Double.parseDouble(meta[6].trim());
-            int gpsSatCount = Integer.parseInt(meta[7].trim().split("\\)")[0]);
-            double distance = Double.parseDouble(meta[8].trim().split(" ")[1].replace("m",""));
-            double height = Double.parseDouble(meta[9].trim().split(" ")[1].replace("m",""));
-            double horizontalSpeed = Double.parseDouble(meta[10].trim().split(" ")[1].replace("m/s", ""));
-            double verticalSpeed = Double.parseDouble(meta[11].trim().split(" ")[1].replace("m/s", ""));
-            // Create a point from the data
-            DataPoint point = new DataPoint(video, s + 1, startSeconds, focalLength, shutterspeed,
-                    iso, ev, dzoom, longitude, latitude, gpsSatCount, distance, height, horizontalSpeed, verticalSpeed);
-            list.add(point);
+            try {
+                double focalLength = Double.parseDouble(meta[0].split("/")[1].trim());
+                double shutterspeed = Double.parseDouble(meta[1].trim().split(" ")[1]);
+                int iso = Integer.parseInt(meta[2].trim().split(" ")[1]);
+                double ev = Double.parseDouble(meta[3].trim().split(" ")[1]);
+                double dzoom = Double.parseDouble(meta[4].trim().split(" ")[1]);
+                double longitude = Double.parseDouble(meta[5].split("\\(")[1]);
+                double latitude = Double.parseDouble(meta[6].trim());
+                int gpsSatCount = Integer.parseInt(meta[7].trim().split("\\)")[0]);
+                double distance = Double.parseDouble(meta[8].trim().split(" ")[1].replace("m", ""));
+                double height = Double.parseDouble(meta[9].trim().split(" ")[1].replace("m", ""));
+                double horizontalSpeed = Double.parseDouble(meta[10].trim().split(" ")[1].replace("m/s", ""));
+                double verticalSpeed = Double.parseDouble(meta[11].trim().split(" ")[1].replace("m/s", ""));
+                // Create a point from the data
+                DataPoint point = new DataPoint(video, s + 1, startSeconds, focalLength, shutterspeed,
+                        iso, ev, dzoom, longitude, latitude, gpsSatCount, distance, height, horizontalSpeed, verticalSpeed);
+                list.add(point);
+            } catch (Exception e) {
+                System.out.println("Unable to parse subtitle line: " + third);
+                continue;
+            }
         }
         return list;
     }

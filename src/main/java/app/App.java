@@ -109,7 +109,7 @@ public class App {
     private void openBrowser() {
         int port = JettyServer.connector.getLocalPort();
         try {
-            System.out.println("File scan commencing, please be patient. Opening browser at http://localhost:" + port);
+            UI.action("Opening browser at http://localhost:" + port);
             Desktop.getDesktop().browse(new URI("http://localhost:" + port));
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,7 +138,7 @@ public class App {
      */
     private void extractBinaries() {
         try {
-            System.out.println("Extracting native ffmpeg executables.");
+            UI.action("Extracting native ffmpeg executables.");
             Utility.setFfPaths();
         } catch (IOException e) {
             e.printStackTrace();
@@ -164,18 +164,28 @@ public class App {
      * Run the application
      */
     public void run() {
+        UI.createManagementUI();
+        UI.setWebStatus("Stopped");
         setWorkingDir();
         extractBinaries();
+        UI.setWebStatus("Starting");
         startJetty();
+        UI.setWebStatus("Running on http://localhost:" + JettyServer.connector.getLocalPort());
         initializeDatabaseServer();
         connectDatabase();
         openBrowser();
         Settings.load();
-        if (newDatabase) FileScanner.scan();
-        System.out.println("File scan done.");
+        FileScanner.scan();
+    }
+
+    public static void close() {
+        try { System.out.println("Stopping webserver."); JettyServer.stop(); } catch (Exception e) { }
+        try { System.out.println("Closing db connection."); conn.close(); } catch (Exception e) { }
+        try { System.out.println("Stopping db server."); db.stop(); } catch (Exception e) { }
     }
 
     public static void main(String[] args) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> App.close()));
         App main = new App();
         main.run();
     }

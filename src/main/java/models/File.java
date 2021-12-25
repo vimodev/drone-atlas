@@ -97,6 +97,15 @@ public class File {
         qr.update(App.conn, query);
     }
 
+    /**
+     * Delete this File in the database
+     * @throws SQLException if something goes wrong
+     */
+    public void delete() throws SQLException {
+        QueryRunner qr = new QueryRunner();
+        qr.update(App.conn, "DELETE FROM files WHERE id=?", this.id);
+    }
+
     public String toString() {
         return id + ", " + path + ", " + hash + ", " + size;
     }
