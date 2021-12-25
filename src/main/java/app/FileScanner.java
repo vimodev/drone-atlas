@@ -1,7 +1,14 @@
 package app;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.Tag;
 import models.DataPoint;
 import models.File;
+import models.Image;
 import models.Video;
 import org.apache.commons.io.FilenameUtils;
 
@@ -16,6 +23,7 @@ public class FileScanner {
 
     // Extensions the scanner looks for
     private static List<String> extensions = Arrays.asList(new String[]{"mp4"});
+    private static List<String> imageExtensions = Arrays.asList(new String[]{"jpg", "jpeg"});
 
     private static boolean running = false;
 
@@ -74,20 +82,29 @@ public class FileScanner {
      */
     private static void handleFile(java.io.File file) {
         // We only care about some extensions
-        if (!extensions.contains(FilenameUtils.getExtension(file.getPath()).toLowerCase())) {
+        if (!extensions.contains(FilenameUtils.getExtension(file.getPath()).toLowerCase()) &&
+                !imageExtensions.contains(FilenameUtils.getExtension(file.getPath()).toLowerCase())) {
             return;
         }
         File f = null;
         try {
             f = new File(file.toPath());
             f.insert();
-            Video v = new Video(f);
-            if (!v.isDjiVideo) return;
-            v.insert();
-            List<DataPoint> points = DataPoint.parseVideo(v);
-            for (DataPoint point : points) {
-                point.insert();
+            // If its a video
+            if (extensions.contains(FilenameUtils.getExtension(file.getPath()).toLowerCase())) {
+                Video v = new Video(f);
+                if (!v.isDjiVideo) return;
+                v.insert();
+                List<DataPoint> points = DataPoint.parseVideo(v);
+                for (DataPoint point : points) {
+                    point.insert();
+                }
+                // If its an image
+            } else if (imageExtensions.contains(FilenameUtils.getExtension(file.getPath()).toLowerCase())) {
+                Image i = new Image(f);
+                i.insert();
             }
+
             UI.action("Successfully parsed: " + f.getPath());
         } catch (IOException e) {
             System.err.println("ERROR: Unable to create file from " + file + ".");
@@ -95,6 +112,10 @@ public class FileScanner {
         } catch (SQLException throwables) {
             System.err.println("ERROR: Unable to insert model.");
             throwables.printStackTrace();
+        } catch (ImageProcessingException e) {
+            e.printStackTrace();
+        } catch (MetadataException e) {
+            e.printStackTrace();
         }
     }
 

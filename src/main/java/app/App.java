@@ -179,9 +179,9 @@ public class App {
     }
 
     public static void close() {
-        try { System.out.println("Stopping webserver."); JettyServer.stop(); } catch (Exception e) { }
-        try { System.out.println("Closing db connection."); conn.close(); } catch (Exception e) { }
-        try { System.out.println("Stopping db server."); db.stop(); } catch (Exception e) { }
+        try { UI.action("Stopping webserver."); JettyServer.stop(); } catch (Exception e) { }
+        try { UI.action("Closing db connection."); conn.close(); } catch (Exception e) { }
+        try { UI.action("Stopping db server."); db.stop(); } catch (Exception e) { }
     }
 
     public static void main(String[] args) {

@@ -84,6 +84,11 @@
             <artifactId>ffmpeg</artifactId>
             <version>0.6.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.drewnoakes</groupId>
+            <artifactId>metadata-extractor</artifactId>
+            <version>2.16.0</version>
+        </dependency>
     </dependencies>
 
 </project>

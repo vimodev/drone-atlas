@@ -11,6 +11,7 @@ public class Migrator {
         createFilesTable();
         createVideosTable();
         createDataPointsTable();
+        createImagesTable();
         createSettingsTable();
     }
 
@@ -66,6 +67,32 @@ public class Migrator {
                 .append("horizontalSpeed double NOT NULL,")
                 .append("verticalSpeed double NOT NULL,")
                 .append("FOREIGN KEY (videoId) REFERENCES videos(id) ON DELETE CASCADE")
+                .append(")")
+                .toString();
+        qr.update(App.conn, query);
+    }
+
+    public static void createImagesTable() throws SQLException {
+        QueryRunner qr = new QueryRunner();
+        String query = new StringBuilder()
+                .append("CREATE TABLE images (")
+                .append("id VARCHAR(255) PRIMARY KEY,")
+                .append("fileId VARCHAR(255) NOT NULL,")
+                .append("width int NOT NULL,")
+                .append("height int NOT NULL,")
+                .append("longitude double NOT NULL,")
+                .append("latitude double NOT NULL,")
+                .append("altitude double NOT NULL,")
+                .append("fStop double NOT NULL,")
+                .append("focalLength double NOT NULL,")
+                .append("exposureTime double NOT NULL,")
+                .append("iso int NOT NULL,")
+                .append("aperture double NOT NULL,")
+                .append("digitalZoom double NOT NULL,")
+                .append("ev double NOT NULL,")
+                .append("shutterSpeed double NOT NULL,")
+                .append("creationTime VARCHAR(255) NOT NULL,")
+                .append("FOREIGN KEY (fileId) REFERENCES files(id) ON DELETE CASCADE")
                 .append(")")
                 .toString();
         qr.update(App.conn, query);
