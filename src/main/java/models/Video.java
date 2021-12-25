@@ -33,6 +33,7 @@ public class Video {
     private double duration;
     private double fps;
     private int bitrate;
+    private String creationTime;
 
     public boolean isDjiVideo;
 
@@ -95,6 +96,13 @@ public class Video {
                 break;
             }
         }
+        if (!this.isDjiVideo) return;
+        // Set the creation time
+        for (FFmpegStream stream : result.getStreams()) {
+            if (stream.tags.containsKey("creation_time")) {
+                this.creationTime = stream.tags.get("creation_time");
+            }
+        }
     }
 
     public Video() {}
@@ -115,7 +123,8 @@ public class Video {
                 .append(height + ",")
                 .append(duration + ",")
                 .append(fps + ",")
-                .append(bitrate)
+                .append(bitrate + ",")
+                .append("'" + creationTime + "'")
                 .append(")")
                 .toString();
         qr.update(App.conn, query);
@@ -177,7 +186,7 @@ public class Video {
 
     public String toString() {
         return id + ", " + (fileId != null ? fileId : file.getId()) + ", " + width + ", "
-                + height + ", " + duration + ", " + fps + ", " + bitrate;
+                + height + ", " + duration + ", " + fps + ", " + bitrate + ", " + creationTime;
     }
 
     public JSONObject toJSON() {
@@ -189,6 +198,7 @@ public class Video {
         json.put("duration", duration);
         json.put("fps", fps);
         json.put("bitrate", bitrate);
+        json.put("creationTime", creationTime);
         return json;
     }
 
@@ -254,5 +264,13 @@ public class Video {
 
     public void setBitrate(int bitrate) {
         this.bitrate = bitrate;
+    }
+
+    public String getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(String creationTime) {
+        this.creationTime = creationTime;
     }
 }

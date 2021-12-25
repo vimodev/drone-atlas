@@ -17,6 +17,7 @@ public class UI {
         management = new JFrame("Drone-Atlas management");
         management.setSize(500, 150);
         management.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        management.setLocationRelativeTo(null);
         layout = new GridLayout(0, 1, 5, 5);
         management.setLayout(layout);
         webStatus = new JLabel("Web server: ", SwingConstants.CENTER);

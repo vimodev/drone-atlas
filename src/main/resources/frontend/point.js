@@ -1,5 +1,5 @@
-const exclude_attributes = ['video', 'id', 'video_id', 'created_at', 'updated_at']
-const video_exclude_attributes = ['id', 'file_id', 'file', 'created_at', 'updated_at']
+const exclude_attributes = ['video', 'id', 'videoId', 'created_at', 'updated_at']
+const video_exclude_attributes = ['id', 'fileId', 'file', 'created_at', 'updated_at']
 const file_exclude_attributes = ['id', 'created_at', 'updated_at']
 
 // Get the point id from the url params

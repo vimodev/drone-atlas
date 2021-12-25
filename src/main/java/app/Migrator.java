@@ -38,6 +38,7 @@ public class Migrator {
                 .append("duration double NOT NULL,")
                 .append("fps double NOT NULL,")
                 .append("bitrate int NOT NULL,")
+                .append("creationTime VARCHAR(255) NOT NULL,")
                 .append("FOREIGN KEY (fileId) REFERENCES files(id) ON DELETE CASCADE")
                 .append(")")
                 .toString();

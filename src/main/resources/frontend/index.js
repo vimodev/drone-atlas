@@ -24,7 +24,7 @@ function filterChanged() {
       continue loop
     }
     // Check time
-    if (time != 'always' && now.getTime() - (new Date(marker.point.video.date_shot)) > time_lookup[time]) {
+    if (time != 'always' && now.getTime() - (new Date(marker.point.video.creationTime)) > time_lookup[time]) {
       marker.display(false)
       continue loop
     }
