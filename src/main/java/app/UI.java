@@ -14,7 +14,7 @@ public class UI {
     public static JButton sync;
 
     public static void createManagementUI() {
-        management = new JFrame("Drone-Atlas management");
+        management = new JFrame("Drone-Atlas v1.0 management");
         management.setSize(500, 150);
         management.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         management.setLocationRelativeTo(null);
