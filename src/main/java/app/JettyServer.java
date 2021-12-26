@@ -78,6 +78,7 @@ public class JettyServer {
         // Image endpoints
         servletHandler.addServlet(ImageServlet.class, "/image");
         servletHandler.addServlet(ImageAllServlet.class, "/image/all");
+        servletHandler.addServlet(ImageThumbnailServlet.class, "/image/thumbnail");
         return servletHandler;
     }
 

@@ -1,3 +1,7 @@
+#videoLink {
+  color: red;
+  cursor: alias;
+}
 
 .thumbnailContainer {
   position:relative;

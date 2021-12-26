@@ -1,7 +1,10 @@
 package servlets;
 
+import models.File;
 import models.Image;
 import models.Video;
+import org.eclipse.jetty.util.ajax.JSON;
+import org.json.simple.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +29,13 @@ public class ImageServlet extends HttpServlet {
         }
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(image.toJSON());
+        File file = image.preloadFile();
+        if (file == null) {
+            response.getWriter().println(image.toJSON());
+            return;
+        }
+        JSONObject result = image.toJSON();
+        result.put("file", file.toJSON());
+        response.getWriter().println(result);
     }
 }

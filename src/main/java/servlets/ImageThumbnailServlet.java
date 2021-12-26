@@ -1,12 +1,16 @@
 package servlets;
 
 import models.Image;
+import org.apache.commons.io.IOUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class ImageThumbnailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -23,8 +27,15 @@ public class ImageThumbnailServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        response.setContentType("application/json");
+        // Make the screenshot
+        java.io.File screenshot = image.thumbnail();
+        // And send the file
+        response.setContentType("image/jpeg");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(image.toJSON());
+        InputStream in = new FileInputStream(screenshot);
+        OutputStream out = response.getOutputStream();
+        IOUtils.copy(in, out);
+        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(out);
     }
 }

@@ -111,6 +111,7 @@ public class Image {
     public java.io.File thumbnail() {
         if (this.file == null) preloadFile();
         if (this.file == null) return null;
+        return new java.io.File(this.file.getPath());
     }
 
     public void insert() throws SQLException {

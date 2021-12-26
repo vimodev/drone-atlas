@@ -1,4 +1,4 @@
-const exclude_attributes = ['created_at', 'updated_at', 'file', 'id', 'file_id']
+const exclude_attributes = ['created_at', 'updated_at', 'file', 'id', 'fileId']
 const file_exclude_attributes = ['id', 'created_at', 'updated_at']
 
 // Get the point id from the url params
@@ -36,7 +36,7 @@ function appendKeyValue(key, value) {
 
 // Populate the page with information
 function populate(info) {
-  appendKeyValue('<b>Image Info:</b>', '')
+  appendKeyValue('<b>Image Info:</b>', '<a id="videoLink">Open image</a>')
   for (const key in info) {
     if (info.hasOwnProperty(key) && exclude_attributes.indexOf(key) == -1) {
       appendKeyValue(key, info[key])
@@ -47,8 +47,12 @@ function populate(info) {
       appendKeyValue(key, info.file[key])
     }
   }
+  const link = document.getElementById("videoLink")
+  link.onclick = () => {
+    fetch("/api/file/open?id=" + info.fileId)
+  }
   const img = document.getElementById("image")
-  img.src = "/api/images/" + info.id + "/show"
+  img.src = "/api/image/thumbnail?id=" + info.id
 }
 
 const image_id = getImageId()
